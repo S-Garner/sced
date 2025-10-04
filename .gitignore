@@ -1,7 +1,9 @@
 /build/
+/out/
 /bin/
 /CMakeFiles/
 /CMakeCache.txt
+compile_commands.json
 
 .DS_Store
 Thumbs.db
@@ -10,3 +12,5 @@ Thumbs.db
 *.swo
 .idea/
 .vscode/
+/.venv/
+/.cache/
