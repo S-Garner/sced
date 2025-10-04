@@ -1,0 +1,12 @@
+/build/
+/bin/
+/CMakeFiles/
+/CMakeCache.txt
+
+.DS_Store
+Thumbs.db
+
+*.swp
+*.swo
+.idea/
+.vscode/
