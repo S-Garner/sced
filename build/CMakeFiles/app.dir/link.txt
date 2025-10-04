@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/app.dir/src/main.cpp.o -o app   -L/home/seth/root/projects/school/sced/libs/linux/so  -Wl,-rpath,/home/seth/root/projects/school/sced/libs/linux/so libglad.a -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl 
