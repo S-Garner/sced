@@ -14,3 +14,5 @@ Thumbs.db
 .vscode/
 /.venv/
 /.cache/
+Zone.Identifier
+libs/macos/docs/
