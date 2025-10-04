@@ -1,0 +1,9 @@
+/home/seth/root/projects/school/sced/build/CMakeFiles/glad.dir
+/home/seth/root/projects/school/sced/build/CMakeFiles/sced.dir
+/home/seth/root/projects/school/sced/build/CMakeFiles/edit_cache.dir
+/home/seth/root/projects/school/sced/build/CMakeFiles/rebuild_cache.dir
+/home/seth/root/projects/school/sced/build/external/glm/CMakeFiles/edit_cache.dir
+/home/seth/root/projects/school/sced/build/external/glm/CMakeFiles/rebuild_cache.dir
+/home/seth/root/projects/school/sced/build/external/glm/glm/CMakeFiles/glm.dir
+/home/seth/root/projects/school/sced/build/external/glm/glm/CMakeFiles/edit_cache.dir
+/home/seth/root/projects/school/sced/build/external/glm/glm/CMakeFiles/rebuild_cache.dir
