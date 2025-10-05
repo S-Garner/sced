@@ -7,8 +7,13 @@
 #include <vector>
 #include <cmath>
 
+#include "core/Window.h"
+#include "Math/MathOps.h"
+#include "objects/Mesh.h"
+#include "objects/Vertex.h"
+
 // Vertex + color struct (expandable later if needed)
-struct Vertex {
+struct Vertz {
     glm::vec3 position;
 };
 
@@ -69,6 +74,29 @@ GLuint createShaderProgram(const char* vtxSrc, const char* fragSrc) {
 }
 
 int main() {
+
+    Mesh mesh;
+    Vertex v1, v2, v3;
+    v1.set("position", {0.0f, 0.5f});
+    v2.set("position", {-0.5f, -0.5f});
+    v3.set("position", {0.5f, -0.5f});
+
+    Triangle tri(v1, v2, v3);
+
+    mesh.addTriangle(tri);
+
+    Math::translate(mesh, {0.3f, 0.3f});
+
+    Math::rotate2D(mesh[0][1], 1.5f);
+
+    Math::scale(mesh[0][1], 1.5f);
+
+    for (auto* v : mesh.getAllVertices())
+    {
+        std::cout << "Point" << std::endl;
+        v->print();
+    }
+
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         return -1;
@@ -78,7 +106,12 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "SCED Base", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(800,
+        600,
+        "SCED Base",
+        nullptr,
+        nullptr);
+
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -93,7 +126,7 @@ int main() {
     }
 
     // Triangle vertices
-    std::vector<Vertex> vertices = {
+    std::vector<Vertz> vertices = {
         { glm::vec3( 0.0f,  0.5f, 0.0f) },
         { glm::vec3( 0.5f, -0.5f, 0.0f) },
         { glm::vec3(-0.5f, -0.5f, 0.0f) }
@@ -108,7 +141,7 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertz, position));
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);

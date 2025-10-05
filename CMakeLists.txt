@@ -10,9 +10,8 @@ target_include_directories(glad PUBLIC external/glad/include)
 # --- GLFW paths per platform ---
 if (WIN32)
     set(GLFW_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/win64/include)
-    set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/win64/lib-vc2022)
-    set(GLFW_DLL_DIR ${CMAKE_SOURCE_DIR}/libs/win64/lib-vc2022)
-    set(GLFW_LIB glfw3.lib)
+    set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/win64/lib-mingw-w64)
+    set(GLFW_LIB glfw3)
 elseif (APPLE)
     set(GLFW_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/macos/include)
     set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/macos/lib-universal)
@@ -28,7 +27,7 @@ endif()
 include_directories(${GLFW_INCLUDE_DIR})
 link_directories(${GLFW_LIB_DIR})
 
-# --- GLM (header-only, defines INTERFACE target if repo cloned) ---
+# --- GLM (header-only) ---
 add_subdirectory(external/glm)
 
 # --- Main executable ---
@@ -50,8 +49,17 @@ else()
     target_link_libraries(sced PRIVATE GL X11 pthread Xrandr Xi dl)
 endif()
 
-# --- Copy runtime DLL/.so/.dylib after build ---
-add_custom_command(TARGET sced POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${GLFW_DLL_DIR} $<TARGET_FILE_DIR:sced>
-)
+# --- Windows DLL copy (safe version) ---
+if (WIN32)
+    set(DLL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/libs/win64/lib-mingw-w64")
+    if (EXISTS "${DLL_SOURCE_DIR}")
+        add_custom_command(TARGET sced POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E echo "Copying GLFW runtime files..."
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${DLL_SOURCE_DIR}"
+                "$<TARGET_FILE_DIR:sced>"
+        )
+    else()
+        message(WARNING "GLFW DLL directory not found: ${DLL_SOURCE_DIR}")
+    endif()
+endif()
