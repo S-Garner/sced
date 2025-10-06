@@ -13,12 +13,18 @@ class Triangle;
 
 namespace Math
 {
+    // --- Helper: Round to 1 decimal place ---
+    inline float round1(float value)
+    {
+        return std::round(value * 10.0f) / 10.0f;
+    }
+
     // --- Attribute-level operations ---
     inline Attribute translate(const Attribute& attr, const Attribute& delta)
     {
         Attribute result(attr);
         for (size_t i = 0; i < std::min(attr.size(), delta.size()); ++i)
-            result.data[i] += delta.data[i];
+            result.data[i] = round1(attr.data[i] + delta.data[i]);
         return result;
     }
 
@@ -26,7 +32,7 @@ namespace Math
     {
         Attribute result(attr);
         for (auto& i : result.data)
-            i *= factor;
+            i = round1(i * factor);
         return result;
     }
 
@@ -39,8 +45,10 @@ namespace Math
         float x = attr.data[0];
         float y = attr.data[1];
 
-        return { x * std::cos(rad) - y * std::sin(rad),
-                 x * std::sin(rad) + y * std::cos(rad) };
+        float rx = x * std::cos(rad) - y * std::sin(rad);
+        float ry = x * std::sin(rad) + y * std::cos(rad);
+
+        return { round1(rx), round1(ry) };
     }
 
     // --- Vertex-level operations ---

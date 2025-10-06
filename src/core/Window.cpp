@@ -6,13 +6,15 @@
 
 #include <iostream>
 #include <ostream>
+#include <GLFW/glfw3.h>
 
 Window::Window(int width, int height, std::string title)
 {
     if (!glfwInit())
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
-        return -1;
+        window = nullptr;
+        return;;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -25,14 +27,14 @@ Window::Window(int width, int height, std::string title)
         NULL,
         NULL);
 
-    if (!window)
+    if (!this->window)
     {
         std::cerr << "Failed to open GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
+        window = nullptr;
+        return;;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(this->window);
     glfwSwapInterval(1); // For v-sync
 }
 

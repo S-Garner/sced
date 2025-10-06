@@ -31,7 +31,10 @@ link_directories(${GLFW_LIB_DIR})
 add_subdirectory(external/glm)
 
 # --- Main executable ---
-add_executable(sced src/main.cpp)
+add_executable(sced
+        src/main.cpp
+        src/core/Window.cpp
+)
 
 # --- Link everything ---
 target_link_libraries(sced PRIVATE glad ${GLFW_LIB} glm)

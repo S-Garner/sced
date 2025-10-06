@@ -8,31 +8,40 @@
 #include <cmath>
 
 #include "core/Window.h"
-#include "Math/MathOps.h"
+#include "core/buffers/BufferData.h"
+#include "math/MathOps.h"
 #include "objects/Mesh.h"
 #include "objects/Vertex.h"
 
-// Vertex + color struct (expandable later if needed)
+
+// Simple vertex structure: position + color
 struct Vertz {
-    glm::vec3 position;
+    float position[3];
+    float color[3];
 };
 
-// Shaders
+// Vertex Shader: No uniforms — uses attributes only
 const char* vertexShaderSrc = R"(
     #version 330 core
     layout(location = 0) in vec3 aPos;
-    uniform mat4 uTransform;
+    layout(location = 1) in vec3 aColor;
+
+    out vec3 vColor;
+
     void main() {
-        gl_Position = uTransform * vec4(aPos, 1.0);
+        gl_Position = vec4(aPos, 1.0);
+        vColor = aColor;
     }
 )";
 
+// Fragment Shader: No uniform — uses input color
 const char* fragmentShaderSrc = R"(
     #version 330 core
+    in vec3 vColor;
     out vec4 FragColor;
-    uniform vec4 uColor;
+
     void main() {
-        FragColor = uColor;
+        FragColor = vec4(vColor, 1.0);
     }
 )";
 
@@ -75,21 +84,66 @@ GLuint createShaderProgram(const char* vtxSrc, const char* fragSrc) {
 
 int main() {
 
+    // Create an instance of a mesh
     Mesh mesh;
+
     Vertex v1, v2, v3;
-    v1.set("position", {0.0f, 0.5f});
-    v2.set("position", {-0.5f, -0.5f});
-    v3.set("position", {0.5f, -0.5f});
+    v1.set("position", {0.0f, 0.5f, 0.0f});
+    v1.set("color", {1.0f, 0.0f, 0.0f});
+
+    v2.set("position", {0.5f, -0.5f, 0.0f});
+    v2.set("color", {1.0f, 0.0f, 0.0f});
+
+    v3.set("position", {-0.5f, -0.5f, 0.0f});
+    v3.set("color", {1.0f, 0.0f, 0.0f});
 
     Triangle tri(v1, v2, v3);
-
     mesh.addTriangle(tri);
 
+    int counter = 0;
+    for (auto* v : mesh.getAllVertices())
+    {
+        std::cout << "Point " + counter << std::endl;
+        v->print();
+        counter++;
+    }
+    std::cout << "\n" << std::endl;
+
+    // Move entire mesh
     Math::translate(mesh, {0.3f, 0.3f});
 
-    Math::rotate2D(mesh[0][1], 1.5f);
+    counter = 0;
+    for (auto* v : mesh.getAllVertices())
+    {
+        std::cout << "Point " + counter << std::endl;
+        v->print();
+        counter++;
+    }
+    std::cout << "\n" << std::endl;
 
-    Math::scale(mesh[0][1], 1.5f);
+    // Rotate a specific vertices
+    Math::rotate2D(mesh[0][1], 45.0f);
+
+    counter = 0;
+    for (auto* v : mesh.getAllVertices())
+    {
+        std::cout << "Point " + counter << std::endl;
+        v->print();
+        counter++;
+    }
+    std::cout << "\n" << std::endl;
+
+    // Scale a specific triangle
+    Math::scale(mesh[0], 1.5f);
+
+    counter = 0;
+    for (auto* v : mesh.getAllVertices())
+    {
+        std::cout << "Point " + counter << std::endl;
+        v->print();
+        counter++;
+    }
+    std::cout << "\n" << std::endl;
 
     for (auto* v : mesh.getAllVertices())
     {
@@ -102,85 +156,68 @@ int main() {
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(800,
-        600,
-        "SCED Base",
-        nullptr,
-        nullptr);
-
-    if (!window) {
-        std::cerr << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // vsync
+    Window window(800, 600, "SCEd base");
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to init GLAD" << std::endl;
         return -1;
     }
 
-    // Triangle vertices
-    std::vector<Vertz> vertices = {
-        { glm::vec3( 0.0f,  0.5f, 0.0f) },
-        { glm::vec3( 0.5f, -0.5f, 0.0f) },
-        { glm::vec3(-0.5f, -0.5f, 0.0f) }
-    };
+    std::vector<float> verts = BufferData::getData(mesh);
 
-    // Setup VAO/VBO
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
+    std::cout << "Vector elements" << std::endl;
+
+    for (float value : verts)
+    {
+        std::cout << value << " ";
+    }
+
+    // Create and fill the buffer first
+    GLuint VBO;
     glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float), verts.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertz, position));
+    // Create and configure the VAO
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    // Associate the pre-filled VBO with the VAO
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    GLsizei stride = 6 * sizeof(float); // 3 position + 3 color
+
+    // Attribute 0: position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
     glEnableVertexAttribArray(0);
+
+    // Attribute 1: color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
 
-    // Shader program + uniforms
     GLuint shaderProgram = createShaderProgram(vertexShaderSrc, fragmentShaderSrc);
-    GLint transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
-    GLint colorLoc = glGetUniformLocation(shaderProgram, "uColor");
 
-    float time = 0.0f;
-
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window.getWindow())) {
         glfwPollEvents();
-
-        time += 0.02f;
-        glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::scale(transform, glm::vec3(1.0f + 0.5f * std::sin(time), 1.0f, 1.0f));
-        transform = glm::rotate(transform, time, glm::vec3(0.0f, 0.0f, 1.0f));
-        transform = glm::translate(transform, glm::vec3(std::sin(time) * 0.5f, std::sin(time) * 0.5f, 0));
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-        glUniform4f(colorLoc, 1.0f, 0.2f, 0.3f, 1.0f); // red-ish color
-
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
-        glBindVertexArray(0);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(verts.size()));
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.getWindow());
     }
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window.getWindow());
     glfwTerminate();
     return 0;
 }
