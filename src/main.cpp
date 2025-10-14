@@ -12,7 +12,7 @@
 #include "math/MathOps.h"
 #include "objects/Mesh.h"
 #include "objects/Vertex.h"
-
+#include <input/Input>
 
 // Simple vertex structure: position + color
 struct Vertz {
@@ -86,6 +86,10 @@ int main() {
 
     // Create an instance of a mesh
     Mesh mesh;
+
+	//Keyboard detection
+	Input input;
+	input.checkKeyboardInput();
 
     Vertex v1, v2, v3;
     v1.set("position", {0.0f, 0.5f, 0.0f});
