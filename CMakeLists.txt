@@ -34,6 +34,7 @@ add_subdirectory(external/glm)
 add_executable(sced
         src/main.cpp
         src/core/Window.cpp
+		src/input/Input.cpp
 )
 
 # --- Link everything ---
