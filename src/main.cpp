@@ -6,13 +6,14 @@
 #include "../external/glm/glm/gtc/type_ptr.hpp"
 #include <vector>
 #include <cmath>
+#include <thread>
 
 #include "core/Window.h"
 #include "core/buffers/BufferData.h"
 #include "math/MathOps.h"
 #include "objects/Mesh.h"
 #include "objects/Vertex.h"
-#include <input/Input>
+#include "input/Input.h"
 
 // Simple vertex structure: position + color
 struct Vertz {
@@ -89,7 +90,6 @@ int main() {
 
 	//Keyboard detection
 	Input input;
-	input.checkKeyboardInput();
 
     Vertex v1, v2, v3;
     v1.set("position", {0.0f, 0.5f, 0.0f});
@@ -161,6 +161,8 @@ int main() {
     }
 
     Window window(800, 600, "SCEd base");
+	
+	thread inputThread(&Input::checkKeyboardInput, &input, window.getWindow());
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to init GLAD" << std::endl;
