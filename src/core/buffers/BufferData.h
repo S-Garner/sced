@@ -50,6 +50,7 @@ namespace BufferData
                 }
             }
         }
+		return data;
     }
 
     std::vector<float> getColors(const Mesh& mesh);
