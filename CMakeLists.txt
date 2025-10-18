@@ -31,7 +31,11 @@ link_directories(${GLFW_LIB_DIR})
 add_subdirectory(external/glm)
 
 # --- Main executable ---
-add_executable(sced src/main.cpp)
+add_executable(sced 
+    src/main.cpp
+    src/Renderer/Shader/Shader.cpp
+    src/Renderer/Renderer2D.cpp
+)
 
 # --- Link everything ---
 target_link_libraries(sced PRIVATE glad ${GLFW_LIB} glm)
