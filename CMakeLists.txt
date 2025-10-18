@@ -31,10 +31,12 @@ link_directories(${GLFW_LIB_DIR})
 add_subdirectory(external/glm)
 
 # --- Main executable ---
-add_executable(sced 
-    src/main.cpp
-    src/Renderer/Shader/Shader.cpp
-    src/Renderer/Renderer2D.cpp
+add_executable(sced
+        src/main.cpp
+        src/Renderer/Shader/Shader.cpp
+        src/Renderer/Renderer2D.cpp
+        src/core/Window.cpp
+		src/input/Input.cpp
 )
 
 # --- Link everything ---

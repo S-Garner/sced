@@ -4,11 +4,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #include "Renderer/Shader/Shader.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Transform.hpp"
 #include "Renderer/Shapes.hpp"
+#include "input/Input.h"
 
 static void onGlfwError(int code, const char* desc) {
     std::fprintf(stderr, "[GLFW %d] %s\n", code, desc);
@@ -37,6 +39,8 @@ int main() {
         return 1;
     }
 
+    Input input;
+    input.initialize(win);
     Shader shader = Shader::fromFiles("Shader/config/flat.vert", "Shader/config/flat.frag");
     Renderer2D renderer;
 
@@ -80,6 +84,18 @@ int main() {
         renderer.drawAll(shader, vp);
 
         glfwSwapBuffers(win);
+
+        if (input.isKeyPressed(GLFW_KEY_ESCAPE)) {
+			glfwSetWindowShouldClose(win, true);
+		}
+
+		if (input.isKeyDown(GLFW_KEY_W)) {
+			std::cout << "W key was just pressed!\n";
+		}
+
+		if (input.isKeyUp(GLFW_KEY_W)) {
+			std::cout << "W key was just released!\n";
+		}
     }
 
     glfwDestroyWindow(win);
