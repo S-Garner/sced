@@ -96,6 +96,8 @@ int main() {
 		if (input.isKeyUp(GLFW_KEY_W)) {
 			std::cout << "W key was just released!\n";
 		}
+
+		input.endFrame();
     }
 
     glfwDestroyWindow(win);
