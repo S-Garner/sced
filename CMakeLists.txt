@@ -10,7 +10,7 @@ target_include_directories(glad PUBLIC external/glad/include)
 # --- GLFW paths per platform ---
 if (WIN32)
     set(GLFW_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/win64/include)
-    set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/win64/lib-mingw-w64)
+    set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/win64/lib-vc2022)
     set(GLFW_LIB glfw3)
 elseif (APPLE)
     set(GLFW_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/macos/include)
@@ -69,3 +69,4 @@ if (WIN32)
         message(WARNING "GLFW DLL directory not found: ${DLL_SOURCE_DIR}")
     endif()
 endif()
+
