@@ -1,29 +1,24 @@
 //
 // Created by sethg on 10/4/2025.
 //
-
-#ifndef SCED_WINDOW_H
-#define SCED_WINDOW_H
+#pragma once
 #include <string>
 
-#include "GLFW/glfw3.h"
-
+struct GLFWwindow;
 
 class Window
 {
 private:
-    GLFWwindow* window;
+    GLFWwindow* m_NativeWindow;
 
 public:
     Window(int width, int height, std::string title);
     ~Window();
 
-    bool shouldCloseWindow();
-    void pollEvents();
-    void swapBuffers();
+    Window(const Window&) = delete;
+    Window& operator = (const Window&) = delete;
 
-    GLFWwindow* getWindow();
+    bool shouldClose() const;
+
+    GLFWwindow* getNativeWindow() const { return m_NativeWindow; }
 };
-
-
-#endif //SCED_WINDOW_H

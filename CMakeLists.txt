@@ -37,6 +37,7 @@ add_executable(sced
         src/Renderer/Renderer2D.cpp
         src/core/Window.cpp
 		src/input/Input.cpp
+		src/Application/Application.cpp
 )
 
 # --- Link everything ---
@@ -69,4 +70,3 @@ if (WIN32)
         message(WARNING "GLFW DLL directory not found: ${DLL_SOURCE_DIR}")
     endif()
 endif()
-
