@@ -1,0 +1,127 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						2
+					]
+				},
+				{
+					"build" : "external/glm",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-external.glm-Debug-c35beecffdababf19b76.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "external/glm"
+				},
+				{
+					"build" : "external/glm/glm",
+					"jsonFile" : "directory-external.glm.glm-Debug-abc7302ed9fa59a98343.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "external/glm/glm",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "sced",
+					"targetIndexes" : 
+					[
+						0,
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "glm",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "glad::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-glad-Debug-c233e0168929adef4ca8.json",
+					"name" : "glad",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "glm::@d090a432591bc19a3a56",
+					"jsonFile" : "target-glm-Debug-9c3281904a5a7517f163.json",
+					"name" : "glm",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sced::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sced-Debug-b3997a47057accd0bb4e.json",
+					"name" : "sced",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug",
+		"source" : "C:/Users/thena/OneDrive/Documents/GitHub/sced"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}
