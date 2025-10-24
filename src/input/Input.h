@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 class Input {
 	public:
@@ -15,8 +15,9 @@ class Input {
 		double getMouseX() const;
 		double getMouseY() const;
 	private:
-		bool keys[GLFW_KEY_LAST];
-		bool lastKeys[GLFW_KEY_LAST];
+	    static constexpr int MAX_KEYS = 512;
+		bool keys[MAX_KEYS];
+		bool lastKeys[MAX_KEYS];
 		double mouseX;
 		double mouseY;
 
