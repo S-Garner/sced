@@ -37,6 +37,11 @@ add_executable(sced
         src/Renderer/Renderer2D.cpp
         src/core/Window.cpp
 		src/input/Input.cpp
+        src/Renderer/IShape2D.hpp
+        src/Renderer/RectangleShape.hpp
+        src/Renderer/CircleShape.hpp
+        src/Renderer/EllipseShape.hpp
+        src/Renderer/RegularPolygonShape.hpp
 )
 
 # --- Link everything ---
