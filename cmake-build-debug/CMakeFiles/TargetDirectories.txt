@@ -1,0 +1,9 @@
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/CMakeFiles/glad.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/CMakeFiles/sced.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/external/glm/CMakeFiles/edit_cache.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/external/glm/CMakeFiles/rebuild_cache.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/external/glm/glm/CMakeFiles/glm.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/external/glm/glm/CMakeFiles/edit_cache.dir
+C:/Users/thena/OneDrive/Documents/GitHub/sced/cmake-build-debug/external/glm/glm/CMakeFiles/rebuild_cache.dir
