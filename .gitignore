@@ -17,3 +17,4 @@ Thumbs.db
 Zone.Identifier
 libs/macos/docs/
 libs/win64/docs/
+/cmake-build-debug/

@@ -21,4 +21,6 @@ public:
     bool shouldClose() const;
 
     GLFWwindow* getNativeWindow() const { return m_NativeWindow; }
+
+    glm::vec2 getDimensions() const;
 };
