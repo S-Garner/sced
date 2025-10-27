@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include "Vertex2D.hpp"
+#include "../Vertex2D.hpp"
 
 // This is the abstract base class (interface)
 struct IShape2D {

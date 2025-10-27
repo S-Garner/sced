@@ -1,6 +1,6 @@
 #pragma once
 #include "IShape2D.hpp"
-#include "Shapes.hpp"   // uses Shapes::makeRegularPolygon
+#include "../Shapes.hpp"   // uses Shapes::makeRegularPolygon
 
 class RegularPolygonShape : public IShape2D {
 public:

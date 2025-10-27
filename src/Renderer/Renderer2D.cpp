@@ -1,4 +1,5 @@
 #include "Renderer2D.hpp"
+#include "../Renderer/Transform.hpp"
 #include <cstddef>
 
 Renderer2D::Renderer2D() {
@@ -160,4 +161,33 @@ void Renderer2D::drawShape(const Shader& shader,
     }
 
     glBindVertexArray(0);
+}
+
+void Renderer2D::setPosition(ShapeHandle handle, glm::vec2 position) {
+    glm::mat4 model = Transform::translate(Transform::setIdentity(), position);
+    setModel(handle, model);
+}
+
+void Renderer2D::removeShape(ShapeHandle handle) {
+    auto it = std::find_if(shapes.begin(), shapes.end(),
+        [&](const ShapeRecord& r) { return r.id == handle.id; });
+
+    if (it == shapes.end()) return;
+
+    int removeOffset = it->offset;
+    int removeCount  = it->count;
+
+    // Erase vertices from CPU buffer
+    cpu.erase(cpu.begin() + removeOffset, cpu.begin() + removeOffset + removeCount);
+
+    // Remove record from shape list
+    shapes.erase(it);
+
+    // Update offsets of all shapes after the removed one
+    for (auto& r : shapes) {
+        if (r.offset > removeOffset)
+            r.offset -= removeCount;
+    }
+
+    dirty = true;
 }

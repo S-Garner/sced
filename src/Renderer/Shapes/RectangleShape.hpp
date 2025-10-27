@@ -1,6 +1,6 @@
 #pragma once
 #include "IShape2D.hpp"
-#include "Shapes.hpp"   // uses Shapes::makeRectangle
+#include "../Shapes.hpp"   // uses Shapes::makeRectangle
 
 class RectangleShape : public IShape2D {
 public:

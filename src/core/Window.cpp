@@ -40,9 +40,3 @@ bool Window::shouldClose() const
 {
     return glfwWindowShouldClose(this->m_NativeWindow);
 }
-
-glm::vec2 Window::getDimensions() const {
-    int width, height;
-    glfwFramebufferSize(m_NativeWindow, &width, &height);
-    return { static_cast<float>(width), static_cast<float>(height) };
-}

@@ -20,6 +20,10 @@ public:
     void clearOverrideColor(ShapeHandle h);
     void updateVertices(ShapeHandle handle, const Vertex2D* verts, int count);
 
+    void setPosition(ShapeHandle handle, glm::vec2 position);
+
+    void removeShape(ShapeHandle handle);
+
     void drawAll(const Shader& shader, const glm::mat4& viewProjection);
     void drawShape(const Shader& shader, const glm::mat4& viewProjection, const std::vector<ShapeHandle>& selection);
 private:

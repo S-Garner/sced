@@ -67,6 +67,8 @@ void Application::cleanup() {
 }
 
 void Application::mainLoop() {
+
+    std::vector<Vertex2D> baseVerts = Shapes::makeRectangle({-0.5f,-0.5f}, {0.0f,0.0f}, {1,0,0});
     auto redRectVerts   = Shapes::makeRectangle({-0.5f,-0.5f}, {0.0f,0.0f}, {1,0,0});
     auto greenRectVerts = Shapes::makeRectangle({ 0.0f, 0.0f}, {0.5f,0.5f}, {0,1,0});
 
@@ -83,8 +85,6 @@ void Application::mainLoop() {
 
         float t = (float)glfwGetTime();
         int w, h;
-
-        auto winSize = m_window->getDimensions();
         glfwGetFramebufferSize(m_Window->getNativeWindow(), &w, &h);
 
         glm::mat4 greenModel = Transform::setIdentity();
@@ -99,7 +99,7 @@ void Application::mainLoop() {
         m_Renderer->setOverrideColor(green, dynamicColor);
 
         float aspect = (h == 0) ? 1.0f : (float)w / (float)h;
-        glm::mat4 vp = glm::ortho(0.0f, (float)w, (float)h, 0.0f, -1.0f, 1.0f);
+        glm::mat4 vp = glm::ortho(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
 
         m_Renderer->drawAll(*m_Shader, vp);
 

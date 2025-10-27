@@ -33,31 +33,45 @@ add_subdirectory(external/glm)
 # --- Main executable ---
 add_executable(sced
         src/main.cpp
+        src/Application/Application.cpp
         src/Renderer/Shader/Shader.cpp
         src/Renderer/Renderer2D.cpp
         src/core/Window.cpp
-		    src/input/Input.cpp
-        src/Renderer/IShape2D.hpp
-        src/Renderer/RectangleShape.hpp
-        src/Renderer/CircleShape.hpp
-        src/Renderer/EllipseShape.hpp
-        src/Renderer/RegularPolygonShape.hpp
+		src/input/Input.cpp
+        src/Renderer/Shapes/IShape2D.hpp
+        src/Renderer/Shapes/RectangleShape.hpp
+        src/Renderer/Shapes/CircleShape.hpp
+        src/Renderer/Shapes/EllipseShape.hpp
+        src/Renderer/Shapes/RegularPolygonShape.hpp
+        src/objects/SCObject.hpp
 )
 
 # --- Link everything ---
 target_link_libraries(sced PRIVATE glad ${GLFW_LIB} glm)
 
+# --- Test executable ---
+add_executable(test_scobject_shapes
+        src/tests/Test_SCObjectShapes.cpp
+        src/Renderer/Shader/Shader.cpp
+        src/Renderer/Renderer2D.cpp
+        src/core/Window.cpp
+        src/input/Input.cpp
+        src/objects/SCObject.cpp
+)
+
+target_link_libraries(test_scobject_shapes PRIVATE glad ${GLFW_LIB} glm)
+
 # --- System OpenGL ---
 if (WIN32)
-    target_link_libraries(sced PRIVATE opengl32)
+    target_link_libraries(test_scobject_shapes PRIVATE opengl32)
 elseif (APPLE)
     find_library(COCOA_LIBRARY Cocoa REQUIRED)
     find_library(OpenGL_LIBRARY OpenGL REQUIRED)
     find_library(IOKIT_LIBRARY IOKit REQUIRED)
     find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-    target_link_libraries(sced PRIVATE ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY} ${COREVIDEO_LIBRARY})
+    target_link_libraries(test_scobject_shapes PRIVATE ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY} ${COREVIDEO_LIBRARY})
 else()
-    target_link_libraries(sced PRIVATE GL X11 pthread Xrandr Xi dl)
+    target_link_libraries(test_scobject_shapes PRIVATE GL X11 pthread Xrandr Xi dl)
 endif()
 
 # --- Windows DLL copy (safe version) ---

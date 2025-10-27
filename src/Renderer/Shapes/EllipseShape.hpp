@@ -1,6 +1,6 @@
 #pragma once
 #include "IShape2D.hpp"
-#include "Shapes.hpp"   // uses Shapes::makeEllipse
+#include "../Shapes.hpp"   // uses Shapes::makeEllipse
 
 class EllipseShape : public IShape2D {
 public:

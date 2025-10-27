@@ -1,6 +1,6 @@
 #pragma once
 #include "IShape2D.hpp"
-#include "Shapes.hpp"   // uses Shapes::makeCircle
+#include "../Shapes.hpp"   // uses Shapes::makeCircle
 
 class CircleShape : public IShape2D {
 public:
@@ -10,6 +10,9 @@ public:
     std::vector<Vertex2D> generateVertices() const override {
         return Shapes::makeCircle(c, r, segs, col);
     }
+
+    int getCenterX() const { return c.x; }
+    int getCenterY() const { return c.y; }
 
 private:
     glm::vec2 c;
