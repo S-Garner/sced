@@ -21,6 +21,7 @@ So you don't need to install anything extra
 cmake -S . -B build
 cmake --build build
 ./build/sced
+# or replace sced with whatever test you want
 ```
 
 ### Windows
@@ -36,6 +37,10 @@ Curently the following test exist:
 
 ```
 test_scobject_shapes
+```
+
+```
+paint_test
 ```
 
 You can run these test similar to how you would run the sced application, as they are outputted in the same build directory.
