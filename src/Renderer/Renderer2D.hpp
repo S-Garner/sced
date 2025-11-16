@@ -15,6 +15,7 @@ public:
     ~Renderer2D();
 
     ShapeHandle addShape(const Vertex2D* verts, int count, const glm::mat4& model = glm::mat4(1.0f));
+    //ShapeHandle addShapeFront(const Vertex2D* verts, int count, const glm::mat4& model = glm::mat4(1.0f));
     void setModel(ShapeHandle handle, const glm::mat4& matrix);
     void setOverrideColor(ShapeHandle handle, const glm::vec3& color);
     void clearOverrideColor(ShapeHandle h);
@@ -23,6 +24,11 @@ public:
     void setPosition(ShapeHandle handle, glm::vec2 position);
 
     void removeShape(ShapeHandle handle);
+
+    const ShapeRecord* getRecord(ShapeHandle handle) const;
+    const std::vector<Vertex2D>& getCPUBuffer() const { return cpu; };
+
+    const std::vector<ShapeRecord>& getShapes() const { return shapes; }
 
     void drawAll(const Shader& shader, const glm::mat4& viewProjection);
     void drawShape(const Shader& shader, const glm::mat4& viewProjection, const std::vector<ShapeHandle>& selection);

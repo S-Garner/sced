@@ -68,6 +68,6 @@ void Input::cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 		inputManager->mouseX = xpos;
 		inputManager->mouseY = ypos;
 
-		std::cout << "Mouse Position: (" << xpos << ", " << ypos << ")\n";
+		//std::cout << "Mouse Position: (" << xpos << ", " << ypos << ")\n";
 	}
 }

@@ -1,36 +1,69 @@
 #include "SCObject.hpp"
 
 SCObject::SCObject(Renderer2D* r)
-    : renderer(r), model(Transform::setIdentity()) {}
+    : renderer(r)
+{
+    model = glm::mat4(1.f);
+}
 
-// --- Adds a new shape to the renderer and tracks its handle
+// -------------------------------
+// Adding Shapes
+// -------------------------------
 ShapeHandle SCObject::addShape(const std::vector<Vertex2D>& vertices) {
     ShapeHandle handle = renderer->addShape(vertices.data(), (int)vertices.size(), model);
-    //shapes.push_back(handle);
     shapes[handle.id] = handle;
-    shapeModels[handle.id] = Transform::setIdentity();
+    localModels[handle.id] = glm::mat4(1.f);
     return handle;
 }
 
-void SCObject::setPosition(const glm::vec2 position) {
-    model = Transform::translate(Transform::setIdentity(), position);
+ShapeHandle SCObject::addShape(const IShape2D& shape) {
+    return addShape(shape.generateVertices());
+}
+
+// -------------------------------
+// Setting Local Shape Transform
+// -------------------------------
+void SCObject::setShapeModel(ShapeHandle handle, const glm::mat4& local) {
+    if (shapes.find(handle.id) == shapes.end()) return;
+    localModels[handle.id] = local;
+    renderer->setModel(handle, model * local);
+}
+
+// -------------------------------
+// Global Transform System
+// -------------------------------
+glm::mat4 SCObject::buildModel() const {
+    glm::mat4 m(1.f);
+    m = Transform::translate(m, globalPos);
+    m = Transform::rotateZ(m, globalRot);
+    m = Transform::scale(m, globalScale);
+    return m;
+}
+
+void SCObject::updateAllModels() {
+    model = buildModel();
     for (auto& [id, handle] : shapes)
-        renderer->setModel(handle, model * shapeModels[id]);
+        renderer->setModel(handle, model * localModels[id]);
+}
+
+void SCObject::setPosition(const glm::vec2 position) {
+    globalPos = position;
+    updateAllModels();
 }
 
 void SCObject::setRotation(float radians) {
-    model = Transform::rotateZ(Transform::setIdentity(), radians);
-    for (auto& [id, handle] : shapes)
-        renderer->setModel(handle, model * shapeModels[id]);
+    globalRot = radians;
+    updateAllModels();
 }
 
 void SCObject::setScale(const glm::vec2 scale) {
-    model = Transform::scale(model, scale);
-    for (auto& [id, handle] : shapes)
-        renderer->setModel(handle, model * shapeModels[id]);
+    globalScale = scale;
+    updateAllModels();
 }
 
-// --- Visibility control
+// -------------------------------
+// Visibility
+// -------------------------------
 void SCObject::setVisible(bool v) {
     visible = v;
 }
@@ -39,39 +72,66 @@ bool SCObject::isVisible() const {
     return visible;
 }
 
-// --- Draw all shapes belonging to this object
-void SCObject::draw(const Shader& shader, const glm::mat4& vp) {
-    if (!visible) return;
-
-    std::vector<ShapeHandle> shapeHandles;
-    shapeHandles.reserve(shapes.size());
-    for (const auto& [id, handle] : shapes) {
-        shapeHandles.push_back(handle);
-    }
-    renderer->drawShape(shader, vp, shapeHandles);
-}
-
+// -------------------------------
+// Color
+// -------------------------------
 void SCObject::setShapeColor(ShapeHandle handle, const glm::vec3& color) {
     auto it = shapes.find(handle.id);
     if (it != shapes.end())
-        renderer->setOverrideColor(it->second, color);
+        renderer->setOverrideColor(handle, color);
 }
 
-void SCObject::setShapeModel(ShapeHandle handle, const glm::mat4& local) {
-    if (auto it = shapes.find(handle.id); it != shapes.end()) {
-        shapeModels[handle.id] = local;
-        renderer->setModel(handle, model * local); // combine global + local
+// -------------------------------
+// Draw
+// -------------------------------
+void SCObject::draw(const Shader& shader, const glm::mat4& vp) {
+    if (!visible) return;
+
+    std::vector<ShapeHandle> list;
+    list.reserve(shapes.size());
+
+    for (auto& [id, handle] : shapes)
+        list.push_back(handle);
+
+    renderer->drawShape(shader, vp, list);
+}
+
+// -------------------------------
+// Clone
+// -------------------------------
+SCObject SCObject::clone() const {
+    SCObject copy(renderer);
+    copy.visible = visible;
+
+    copy.globalPos = globalPos;
+    copy.globalRot = globalRot;
+    copy.globalScale = globalScale;
+
+    copy.model = model;
+
+    // clone each shape
+    for (auto& [id, handle] : shapes)
+    {
+        const ShapeRecord* record = renderer->getRecord(handle);
+        if (!record) continue;
+
+        const auto& cpuBuf = renderer->getCPUBuffer();
+
+        std::vector<Vertex2D> verts(
+            cpuBuf.begin() + record->offset,
+            cpuBuf.begin() + record->offset + record->count
+        );
+
+        ShapeHandle newHandle = renderer->addShape(verts.data(), (int)verts.size(), model);
+        copy.shapes[newHandle.id] = newHandle;
+
+        // copy per-shape local model
+        auto it = localModels.find(id);
+        if (it != localModels.end())
+            copy.localModels[newHandle.id] = it->second;
+        else
+            copy.localModels[newHandle.id] = glm::mat4(1.f);
     }
-}
 
-ShapeHandle SCObject::addShape(const IShape2D& shape) {
-    return addShape(shape.generateVertices());
-}
-
-void SCObject::removeShape(ShapeHandle handle) {
-    auto it = shapes.find(handle.id);
-    if (it != shapes.end()) {
-        renderer->removeShape(handle);
-        shapes.erase(it);
-    }
+    return copy;
 }

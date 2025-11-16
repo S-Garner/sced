@@ -128,6 +128,10 @@ int main() {
 
     cloud.setPosition({firstVal, 0.2f});
 
+    SCObject cloud2 = cloud.clone();
+    cloud2.setPosition({firstVal - 1.0f, 0.2f});
+    cloud2.setScale({.4f, .4f});
+
     // --- Main Loop ---
     while (!glfwWindowShouldClose(window)) {
         firstVal += 0.002f;
@@ -152,10 +156,27 @@ int main() {
         //entity.draw(shader, vp);
 
         cloud.setPosition({(firstVal), 0.2f});
+        //cloud2.setRotation(-rotation * 0.7f);
+        cloud2.setPosition({firstVal + 1.0f, 0.2f - .5f});
+
+        float t = glfwGetTime();
+
+        float r = 0.5f + 0.5f * sin(t * 0.5f);
+        float g = 0.5f + 0.5f * sin(t * 0.7f + 1.5f);
+        float b = 0.5f + 0.5f * sin(t * 1.3f + 3.1f);
+
+        glm::vec3 newColor(r, g, b);
+
+        for (ShapeHandle h : cloud.getShapeHandles())
+            cloud.setShapeColor(h, newColor);
+            
+        for (ShapeHandle h : cloud2.getShapeHandles())
+            cloud2.setShapeColor(h, newColor);
 
         sky.draw(shader, vp);
 
         cloud.draw(shader, vp);
+        cloud2.draw(shader, vp);
 
         sun.draw(shader, vp);
 

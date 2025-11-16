@@ -68,6 +68,17 @@ ShapeHandle Renderer2D::addShape(const Vertex2D* verts, int count, const glm::ma
     return ShapeHandle{record.id};
 }
 
+/*
+ShapeHandle Renderer2D::addShapeFront(const Vertex2D* verts, int count, const glm::mat4& model) {
+    if (count <= 0) {
+        return {};
+    }
+
+    // The current size of verts in cpu, mark where the new shape will be inserted
+    const int start = static_cast<int>(cpu.size());
+}
+*/
+
 void Renderer2D::setModel(ShapeHandle handle, const glm::mat4& matrix) {
     if (auto* r = find(handle)) r->model = matrix;
 }
@@ -190,4 +201,11 @@ void Renderer2D::removeShape(ShapeHandle handle) {
     }
 
     dirty = true;
+}
+
+const ShapeRecord* Renderer2D::getRecord(ShapeHandle handle) const {
+    for (auto& r : shapes)
+        if (r.id == handle.id)
+            return &r;
+    return nullptr;
 }
