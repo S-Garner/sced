@@ -21,20 +21,23 @@
 #include "../input/Input.h"
 #include "../color/SColor.hpp"
 
-
-int main() {
+int main()
+{
     // --- Initialize GLFW + OpenGL ---
-    if (!glfwInit()) return -1;
+    if (!glfwInit())
+        return -1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "SCObject Shape Test", nullptr, nullptr);
-    if (!window) return -1;
+    GLFWwindow *window = glfwCreateWindow(800, 600, "SCObject Shape Test", nullptr, nullptr);
+    if (!window)
+        return -1;
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return -1;
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        return -1;
 
     Renderer2D renderer;
     Shader shader = Shader::fromFiles("Shader/config/flat.vert", "Shader/config/flat.frag");
@@ -47,26 +50,28 @@ int main() {
     sun.addShape(sunShape);
 
     // 2. Create one base rectangle (ray)
-    //RectangleShape ray({-0.02f, 0.25f}, {0.02f, 0.45f}, {1.0f, 0.9f, 0.0f});
+    // RectangleShape ray({-0.02f, 0.25f}, {0.02f, 0.45f}, {1.0f, 0.9f, 0.0f});
     RectangleShape ray({-0.02f, 0.25f}, {0.02f, 0.45f}, SColor::normalizeColor(255, 200, 0));
 
     // 3. Add six rays around the circle
     const int rayCount = 6;
-    for (int i = 0; i < rayCount; ++i) {
-       float angle = glm::radians(360.0f / rayCount * i);
+    for (int i = 0; i < rayCount; ++i)
+    {
+        float angle = glm::radians(360.0f / rayCount * i);
 
-       // Get base vertices from ray
-       auto verts = ray.generateVertices();
+        // Get base vertices from ray
+        auto verts = ray.generateVertices();
 
         // Rotate each vertex around the circle center
-       glm::mat4 rotMat = Transform::rotateZ_about(Transform::setIdentity(), angle, {0.0f, 0.0f});
-       for (auto& v : verts) {
-           glm::vec4 p = rotMat * glm::vec4(v.pos, 0.0f, 1.0f);
-           v.pos = glm::vec2(p);
-       }
+        glm::mat4 rotMat = Transform::rotateZ_about(Transform::setIdentity(), angle, {0.0f, 0.0f});
+        for (auto &v : verts)
+        {
+            glm::vec4 p = rotMat * glm::vec4(v.pos, 0.0f, 1.0f);
+            v.pos = glm::vec2(p);
+        }
 
         // Add to the SCObject
-       sun.addShape(verts);
+        sun.addShape(verts);
     }
 
     sun.setPosition({0.0f, 0.0f});
@@ -79,15 +84,14 @@ int main() {
     SCObject sky(&renderer);
 
     RectangleShape fullScreenRect(
-    { -1.333f, -1.0f },
-    {  1.333f,  1.0f },
-    { 0.f, 0.8f, 0.9f }
-    );
+        {-1.333f, -1.0f},
+        {1.333f, 1.0f},
+        {0.f, 0.8f, 0.9f});
 
     sky.addShape(fullScreenRect);
 
     // ************ CLOUD SHAPE
-    
+
     SCObject cloud(&renderer);
 
     RectangleShape cloudBase({0.0f, -0.1f}, {0.5f, 0.1f}, {0.95f, 0.95f, 0.95f});
@@ -114,9 +118,9 @@ int main() {
     auto puff2 = cloud.addShape(cloudVerts2);
     auto puff3 = cloud.addShape(cloudVerts3);
 
-    //auto index1 = cloud.findShapeIndex(cloud.addShape(const *cloudVerts1));
-    
-    //cloud.setShapeColor(puff1, {1.0f, 0.2f, 0.2f});
+    // auto index1 = cloud.findShapeIndex(cloud.addShape(const *cloudVerts1));
+
+    // cloud.setShapeColor(puff1, {1.0f, 0.2f, 0.2f});
     cloud.setShapeModel(puff1, cloudTransform1);
     cloud.setShapeModel(puff2, cloudTransform2);
     cloud.setShapeModel(puff3, cloudTransform3);
@@ -133,12 +137,13 @@ int main() {
     cloud2.setScale({.4f, .4f});
 
     // --- Main Loop ---
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         firstVal += 0.002f;
 
         if (firstVal > 2.0f)
             firstVal = -2.0f;
-        
+
         glfwPollEvents();
         glClearColor(0.08f, 0.08f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -148,15 +153,15 @@ int main() {
 
         rotation += 0.01f; // radians per frame
         if (rotation > glm::two_pi<float>())
-        rotation -= glm::two_pi<float>();
+            rotation -= glm::two_pi<float>();
 
         sun.setRotation(rotation);
 
         glm::mat4 vp = glm::ortho(-aspect, aspect, -1.f, 1.f, -1.f, 1.f);
-        //entity.draw(shader, vp);
+        // entity.draw(shader, vp);
 
         cloud.setPosition({(firstVal), 0.2f});
-        //cloud2.setRotation(-rotation * 0.7f);
+        // cloud2.setRotation(-rotation * 0.7f);
         cloud2.setPosition({firstVal + 1.0f, 0.2f - .5f});
 
         float t = glfwGetTime();
@@ -169,7 +174,7 @@ int main() {
 
         for (ShapeHandle h : cloud.getShapeHandles())
             cloud.setShapeColor(h, newColor);
-            
+
         for (ShapeHandle h : cloud2.getShapeHandles())
             cloud2.setShapeColor(h, newColor);
 
