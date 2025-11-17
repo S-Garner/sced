@@ -86,6 +86,19 @@ add_executable(numbers_test
 
 target_link_libraries(numbers_test PRIVATE glad ${GLFW_LIB} glm)
 
+add_executable(simon
+        src/tests/Simon.cpp
+        src/ui/elements/SCButton.cpp
+        src/Renderer/Shader/Shader.cpp
+        src/Renderer/Renderer2D.cpp
+        src/Renderer/Renderer2D.cpp
+        src/core/Window.cpp
+        src/input/Input.cpp
+        src/objects/SCObject.cpp
+)
+
+target_link_libraries(simon PRIVATE glad ${GLFW_LIB} glm)
+
 # --- System OpenGL ---
 if (WIN32)
     target_link_libraries(test_scobject_shapes PRIVATE opengl32)
