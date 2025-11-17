@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 #include "../Renderer/Shapes/IShape2D.hpp"
 #include "../Renderer/Shapes/RectangleShape.hpp"
@@ -106,7 +108,8 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "SCED Paint Test", nullptr, nullptr);
+    //GLFWwindow* window = glfwCreateWindow(800, 600, "SCED Paint Test", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "SCED Paint Test", nullptr, nullptr);
     if (!window) return -1;
 
     glfwMakeContextCurrent(window);
@@ -127,8 +130,14 @@ int main() {
             {  1.333f,  1.0f },
             { 0.05f, 0.05f, 0.08f }
         );
-        background.addShape(fullScreenRect);
+        //background.addShape(fullScreenRect);
     }
+
+    SCObject newBackground(&renderer);
+    RectangleShape newFullScreen(
+        SCArch::Rect(10.0, 10.0, {-2.0f, 2.0f}, SColor::normalizeColor(245, 245, 245))
+    );
+    background.addShape(newFullScreen);
 
     // Stroke frames
     std::vector<SCObject> strokes;
@@ -140,9 +149,10 @@ int main() {
 
     // Brush
     Brush brush;
-    brush.radius   = 0.1f;
+    brush.radius   = 0.01f;
     brush.spacing  = 0.00001f;
-    brush.color    = glm::vec3(240/255.f, 240/255.f, 255/255.f);
+    //brush.color    = glm::vec3(240/255.f, 240/255.f, 255/255.f);
+    brush.color = SColor::normalizeColor(0, 0, 0);
     brush.segments = 36;
 
     bool      mouseWasDown  = false;
@@ -151,7 +161,7 @@ int main() {
 
     // --- red button setup unchanged ---
     SCObject redButton(&renderer);
-    auto rectShape = CircleShape({-1.25f, .9f}, .05f, 64, SColor::normalizeColor(255, 163, 163));
+    auto rectShape = CircleShape({-1.7f, .9f}, .05f, 64, SColor::normalizeColor(255, 163, 163));
     auto redBtnHandle = redButton.addShape(rectShape);
     SCButton redBtn(&redButton, redBtnHandle, &renderer);
     bool toggled = false;
@@ -161,7 +171,7 @@ int main() {
             brush.color = glm::vec3(1.0f, 0.2f, 0.2f);
             redButton.setShapeColor(redBtnHandle, glm::vec3(1.0f, 0.2f, 0.2f));
         } else {
-            brush.color = glm::vec3(240/255.f, 240/255.f, 255/255.f);
+            brush.color = SColor::normalizeColor(0, 0, 0);
             redButton.setShapeColor(redBtnHandle, SColor::normalizeColor(255, 163, 163));
         }
         std::cout << "red button clicked\n";
@@ -169,7 +179,7 @@ int main() {
 
 
     SCObject blueButton(&renderer);
-    auto blueCirc = CircleShape({-1.10f, .9f}, .05f, 64, SColor::normalizeColor(163, 163, 255));
+    auto blueCirc = CircleShape({-1.56f, .9f}, .05f, 64, SColor::normalizeColor(163, 163, 255));
     auto blueBtnHandle = blueButton.addShape(blueCirc);
     SCButton blueBtn(&blueButton, blueBtnHandle, &renderer);
     bool toggledBlue = false;
@@ -179,7 +189,7 @@ int main() {
             brush.color = SColor::normalizeColor(0, 0, 255);
             blueButton.setShapeColor(blueBtnHandle, SColor::normalizeColor(0, 0, 255));
         } else {
-            brush.color = SColor::normalizeColor(255, 255, 255);
+            brush.color = SColor::normalizeColor(0, 0, 0);
             blueButton.setShapeColor(blueBtnHandle, SColor::normalizeColor(163, 163, 255));
         }
         std::cout << "blue button clicked\n";
@@ -187,7 +197,7 @@ int main() {
 
     SCObject yellowButton(&renderer);
 
-    auto yellowCirc = CircleShape({-1.25f, 0.74f}, .05f, 64, SColor::normalizeColor(200, 200, 163));
+    auto yellowCirc = CircleShape({-1.7f, 0.74f}, .05f, 64, SColor::normalizeColor(220, 220, 163));
     auto yellowBtnHandle = yellowButton.addShape(yellowCirc);
 
     SCButton yellowBtn(&yellowButton, yellowBtnHandle, &renderer);
@@ -198,14 +208,73 @@ int main() {
             brush.color = SColor::normalizeColor(255, 255, 0);
             yellowButton.setShapeColor(yellowBtnHandle, SColor::normalizeColor(255, 255, 0));
         } else {
-            brush.color = SColor::normalizeColor(255, 255, 255);
+            brush.color = SColor::normalizeColor(0, 0, 0);
             yellowButton.setShapeColor(yellowBtnHandle, SColor::normalizeColor(200, 200, 163));
         }
     });
 
+    SCObject greenButton(&renderer);
 
-    SCObject arrowButton(&renderer);
-    glm::vec2 center = { -0.8f, 0.7f };
+    auto greenCirc = CircleShape({-1.56f, 0.74}, .05f, 64, SColor::normalizeColor(163, 255, 163));
+    auto greenBtnHandle = greenButton.addShape(greenCirc);
+
+    SCButton greenBtn(&greenButton, greenBtnHandle, &renderer);
+    bool toggledGreen = false;
+    greenBtn.setCallback([&](){
+        toggledGreen = !toggledGreen;
+        if (toggledGreen) {
+            brush.color = SColor::normalizeColor(0, 255, 0);
+            greenButton.setShapeColor(greenBtnHandle, SColor::normalizeColor(0, 255, 0));
+        } else {
+            brush.color = SColor::normalizeColor(0, 0, 0);
+            greenButton.setShapeColor(greenBtnHandle, SColor::normalizeColor(163, 255, 163));
+        }
+    });
+
+    SCObject upArrowButton(&renderer);
+    glm::vec2 upCenter = {-1.4f, 0.9f};
+
+    CircleShape upBgCircleLocal(
+        {0.0f, 0.0f},
+        0.08f,
+        64,
+        SColor::normalizeColor(255,255,255)
+    );
+
+    auto upBgVerts = upBgCircleLocal.generateVertices();
+    for (auto& v : upBgVerts) {
+        v.pos += upCenter;
+    }
+
+    std::vector<Vertex2D> upArrow = {
+        { glm::vec2( 0.00f,  0.04f), glm::vec3(0,0,0) },
+        { glm::vec2( 0.03f, -0.02f), glm::vec3(0,0,0) },
+        { glm::vec2(-0.03f, -0.02f), glm::vec3(0,0,0) },
+    };
+
+    for (auto& v : upArrow) {
+        v.pos += upCenter;
+    }
+
+    ShapeHandle arrowU = upArrowButton.addShape(upArrow);
+    ShapeHandle bgU = upArrowButton.addShape(upBgVerts);
+    SCButton arrowUpBtn(&upArrowButton, bgU, &renderer);
+
+    arrowUpBtn.setCallback([&]() {
+        int percentage_to_subtract = 10;
+
+        double ten_percent = (percentage_to_subtract / 100.0) * brush.radius;
+        brush.radius += ten_percent;
+
+        upArrowButton.setShapeColor(bgU, SColor::normalizeColor(255,255,0));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        upArrowButton.setShapeColor(bgU, SColor::normalizeColor(255,255,255));
+        
+        std::cout << "Brush radius: " << brush.radius << std::endl;
+    });
+
+    SCObject dwnArrowButton(&renderer);
+    glm::vec2 dwnCenter = {-1.4f, 0.7f };
 
     CircleShape bgCircleLocal(
         {0.0f, 0.0f},
@@ -216,28 +285,34 @@ int main() {
 
     auto bgVerts = bgCircleLocal.generateVertices();
     for (auto& v : bgVerts) {
-        v.pos += center;
+        v.pos += dwnCenter;
     }
 
-    std::vector<Vertex2D> arrowLocal = {
-        { glm::vec2( 0.00f,  0.04f), glm::vec3(0,0,0) },
-        { glm::vec2( 0.03f, -0.02f), glm::vec3(0,0,0) },
-        { glm::vec2(-0.03f, -0.02f), glm::vec3(0,0,0) },
+    std::vector<Vertex2D> downArrow = {
+        { glm::vec2(-0.03f, 0.02f), glm::vec3(0,0,0) },
+        { glm::vec2(0.03f, 0.02f), glm::vec3(0,0,0) },
+        { glm::vec2(0.0f, -0.04f), glm::vec3(0,0,0) }
     };
 
-    for (auto& v : arrowLocal) {
-        v.pos += center;
+    for (auto& v : downArrow) {
+        v.pos += dwnCenter;
     }
 
-    ShapeHandle arrowH = arrowButton.addShape(arrowLocal);
-    ShapeHandle bgH    = arrowButton.addShape(bgVerts);
-    SCButton arrowBtn(&arrowButton, bgH, &renderer);
+    ShapeHandle arrowH = dwnArrowButton.addShape(downArrow);
+    ShapeHandle bgH    = dwnArrowButton.addShape(bgVerts);
+    SCButton arrowBtn(&dwnArrowButton, bgH, &renderer);
 
     arrowBtn.setCallback([&](){
         int percentage_to_subtract = 10;
+
         double ten_percent = (percentage_to_subtract / 100.0) * brush.radius;
         brush.radius -= ten_percent;
-        arrowButton.setShapeColor(bgH, SColor::normalizeColor(255,255,0)); 
+
+        dwnArrowButton.setShapeColor(bgH, SColor::normalizeColor(255,255,0));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        dwnArrowButton.setShapeColor(bgH, SColor::normalizeColor(255,255,255));
+
+        std::cout << "Brush radius: " << brush.radius << std::endl;
     });
 
     int width = 0, height = 0;
@@ -290,13 +365,17 @@ int main() {
         redBtn.update(fs, mouseWasDown);
         blueBtn.update(fs, mouseWasDown);
         yellowBtn.update(fs, mouseWasDown);
+        greenBtn.update(fs, mouseWasDown);
         arrowBtn.update(fs, mouseWasDown);
+        arrowUpBtn.update(fs, mouseWasDown);
 
         // Ignore painting when mouse is over the buttons
         if (!redBtn.contains(fs.worldPos) &&
             !blueBtn.contains(fs.worldPos) &&
             !arrowBtn.contains(fs.worldPos) &&
-            !yellowBtn.contains(fs.worldPos))
+            !greenBtn.contains(fs.worldPos) &&
+            !yellowBtn.contains(fs.worldPos) &&
+            !arrowUpBtn.contains(fs.worldPos))
         {
             handlePainting(fs, brush, *active, lastPlacedPos, lastPosValid, mouseWasDown);
         }
@@ -311,7 +390,9 @@ int main() {
         redBtn.draw(shader, vp);
         blueBtn.draw(shader, vp);
         yellowBtn.draw(shader, vp);
+        greenBtn.draw(shader, vp);
         arrowBtn.draw(shader, vp);
+        arrowUpBtn.draw(shader, vp);
 
         glfwSwapBuffers(window);
         input.endFrame();
