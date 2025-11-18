@@ -4,8 +4,12 @@ project(sced)
 set(CMAKE_CXX_STANDARD 17)
 
 # --- GLAD ---
-add_library(glad external/glad/src/glad.c)
-target_include_directories(glad PUBLIC external/glad/include)
+add_library(glad external/glad/src/glad.c
+        src/parser/SCparse.hpp
+        src/parser/SCparse.cpp)
+target_include_directories(glad PUBLIC
+        external/glad/include
+        ${CMAKE_SOURCE_DIR}/external/nlohmann)
 
 # --- GLFW paths per platform ---
 if (WIN32)
@@ -29,6 +33,7 @@ link_directories(${GLFW_LIB_DIR})
 
 # --- GLM (header-only) ---
 add_subdirectory(external/glm)
+target_link_libraries(glad PUBLIC glm)
 
 # --- Main executable ---
 add_executable(sced
@@ -99,18 +104,31 @@ add_executable(simon
 
 target_link_libraries(simon PRIVATE glad ${GLFW_LIB} glm)
 
+add_executable(scparse_tests
+        src/tests/SCparseTests.cpp)
+
+target_link_libraries(scparse_tests PRIVATE glad ${GLFW_LIB} glm)
+target_compile_definitions(scparse_tests PRIVATE
+        SCPARSE_TEST_JSON_PATH="${CMAKE_SOURCE_DIR}/src/tests/data/sample_shapes.json")
+
 # --- System OpenGL ---
 if (WIN32)
-    target_link_libraries(test_scobject_shapes PRIVATE opengl32)
+    set(PLATFORM_LIBS opengl32)
 elseif (APPLE)
     find_library(COCOA_LIBRARY Cocoa REQUIRED)
     find_library(OpenGL_LIBRARY OpenGL REQUIRED)
     find_library(IOKIT_LIBRARY IOKit REQUIRED)
     find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-    target_link_libraries(test_scobject_shapes PRIVATE ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY} ${COREVIDEO_LIBRARY})
+    set(PLATFORM_LIBS ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY} ${COREVIDEO_LIBRARY})
 else()
-    target_link_libraries(test_scobject_shapes PRIVATE GL X11 pthread Xrandr Xi dl)
+    set(PLATFORM_LIBS GL X11 pthread Xrandr Xi dl)
 endif()
+
+foreach(target_name IN ITEMS sced test_scobject_shapes paint_test numbers_test simon scparse_tests)
+    if (TARGET ${target_name})
+        target_link_libraries(${target_name} PRIVATE ${PLATFORM_LIBS})
+    endif()
+endforeach()
 
 # --- Windows DLL copy (safe version) ---
 if (WIN32)
