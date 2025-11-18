@@ -4,8 +4,12 @@ project(sced)
 set(CMAKE_CXX_STANDARD 17)
 
 # --- GLAD ---
-add_library(glad external/glad/src/glad.c)
-target_include_directories(glad PUBLIC external/glad/include)
+add_library(glad external/glad/src/glad.c
+        src/parser/SCparse.hpp
+        src/parser/SCparse.cpp)
+target_include_directories(glad PUBLIC
+        external/glad/include
+        ${CMAKE_SOURCE_DIR}/external/nlohmann)
 
 # --- GLFW paths per platform ---
 if (WIN32)
@@ -17,7 +21,6 @@ elseif (APPLE)
     set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/macos/lib-universal)
     set(GLFW_DLL_DIR ${CMAKE_SOURCE_DIR}/libs/macos/lib-universal)
     set(GLFW_LIB libglfw3.a)
-    
 else()
     set(GLFW_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/linux/include)
     set(GLFW_LIB_DIR ${CMAKE_SOURCE_DIR}/libs/linux/so)
@@ -28,10 +31,9 @@ endif()
 include_directories(${GLFW_INCLUDE_DIR})
 link_directories(${GLFW_LIB_DIR})
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-
 # --- GLM (header-only) ---
 add_subdirectory(external/glm)
+target_link_libraries(glad PUBLIC glm)
 
 # --- Main executable ---
 add_executable(sced
@@ -52,20 +54,6 @@ add_executable(sced
 # --- Link everything ---
 target_link_libraries(sced PRIVATE glad ${GLFW_LIB} glm)
 
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-
-    target_link_libraries(sced PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
-
 # --- Test executable ---
 add_executable(test_scobject_shapes
         src/tests/Test_SCObjectShapes.cpp
@@ -77,20 +65,6 @@ add_executable(test_scobject_shapes
 )
 
 target_link_libraries(test_scobject_shapes PRIVATE glad ${GLFW_LIB} glm)
-
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-
-    target_link_libraries(test_scobject_shapes PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
 
 add_executable(paint_test
         src/tests/Paint_Test.cpp
@@ -105,47 +79,6 @@ add_executable(paint_test
 
 target_link_libraries(paint_test PRIVATE glad ${GLFW_LIB} glm)
 
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-
-    target_link_libraries(paint_test PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
-
-add_executable(pong
-        src/tests/Pong.cpp
-        src/ui/elements/SCButton.cpp
-        src/Renderer/Shader/Shader.cpp
-        src/Renderer/Renderer2D.cpp
-        src/Renderer/Renderer2D.cpp
-        src/core/Window.cpp
-        src/input/Input.cpp
-        src/objects/SCObject.cpp
-)
-
-target_link_libraries(pong PRIVATE glad ${GLFW_LIB} glm)
-
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-
-    target_link_libraries(pong PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
-
 add_executable(numbers_test
         src/tests/Numbers.cpp
         src/Renderer/Shader/Shader.cpp
@@ -157,20 +90,6 @@ add_executable(numbers_test
 )
 
 target_link_libraries(numbers_test PRIVATE glad ${GLFW_LIB} glm)
-
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-
-    target_link_libraries(numbers_test PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
 
 add_executable(simon
         src/tests/Simon.cpp
@@ -185,62 +104,31 @@ add_executable(simon
 
 target_link_libraries(simon PRIVATE glad ${GLFW_LIB} glm)
 
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
+add_executable(scparse_tests
+        src/tests/SCparseTests.cpp)
 
-    target_link_libraries(simon PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
-
-add_executable(new_paint
-        src/tests/New_Paint.cpp
-        src/ui/elements/SCButton.cpp
-        src/ui/UIManager.hpp
-        src/ui/FrameState.hpp
-        src/input/ScreenToWorld.hpp
-        src/scene/LayerStack.hpp
-        src/Renderer/Shader/Shader.cpp
-        src/Renderer/Renderer2D.cpp
-        src/core/Window.cpp
-        src/input/Input.cpp
-        src/objects/SCObject.cpp
-)
-
-target_link_libraries(new_paint PRIVATE glad ${GLFW_LIB} glm)
-
-if (APPLE)
-    find_library(COCOA_LIBRARY Cocoa REQUIRED)
-    find_library(OpenGL_LIBRARY OpenGL REQUIRED)
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-
-    target_link_libraries(new_paint PRIVATE
-        ${COCOA_LIBRARY}
-        ${OpenGL_LIBRARY}
-        ${IOKIT_LIBRARY}
-        ${COREVIDEO_LIBRARY}
-    )
-endif()
+target_link_libraries(scparse_tests PRIVATE glad ${GLFW_LIB} glm)
+target_compile_definitions(scparse_tests PRIVATE
+        SCPARSE_TEST_JSON_PATH="${CMAKE_SOURCE_DIR}/src/tests/data/sample_shapes.json")
 
 # --- System OpenGL ---
 if (WIN32)
-    target_link_libraries(test_scobject_shapes PRIVATE opengl32)
+    set(PLATFORM_LIBS opengl32)
 elseif (APPLE)
     find_library(COCOA_LIBRARY Cocoa REQUIRED)
     find_library(OpenGL_LIBRARY OpenGL REQUIRED)
     find_library(IOKIT_LIBRARY IOKit REQUIRED)
     find_library(COREVIDEO_LIBRARY CoreVideo REQUIRED)
-    target_link_libraries(test_scobject_shapes PRIVATE ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY} ${COREVIDEO_LIBRARY})
+    set(PLATFORM_LIBS ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY} ${COREVIDEO_LIBRARY})
 else()
-    target_link_libraries(test_scobject_shapes PRIVATE GL X11 pthread Xrandr Xi dl)
+    set(PLATFORM_LIBS GL X11 pthread Xrandr Xi dl)
 endif()
+
+foreach(target_name IN ITEMS sced test_scobject_shapes paint_test numbers_test simon scparse_tests)
+    if (TARGET ${target_name})
+        target_link_libraries(${target_name} PRIVATE ${PLATFORM_LIBS})
+    endif()
+endforeach()
 
 # --- Windows DLL copy (safe version) ---
 if (WIN32)
