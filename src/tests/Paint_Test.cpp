@@ -122,22 +122,37 @@ int main() {
     Input input;
     input.initialize(window);
 
+    bool onionEnabled = false;
+
     // Background
     SCObject background(&renderer);
-    {
-        RectangleShape fullScreenRect(
-            { -1.333f, -1.0f },
-            {  1.333f,  1.0f },
-            { 0.05f, 0.05f, 0.08f }
-        );
-        //background.addShape(fullScreenRect);
-    }
 
-    SCObject newBackground(&renderer);
     RectangleShape newFullScreen(
         SCArch::Rect(10.0, 10.0, {-2.0f, 2.0f}, SColor::normalizeColor(245, 245, 245))
     );
+
     background.addShape(newFullScreen);
+
+    SCObject frameObj(&renderer);
+    RectangleShape frameRect(
+        SCArch::Rect(1.2, 6.0, {-1.9f, 1.0f}, SColor::normalizeColor(127, 127, 127))
+    );
+    RectangleShape upprFrameRect(
+        SCArch::Rect(8.0, .2, {-1.9f, 1.0f}, SColor::normalizeColor(127, 127, 127))
+    );
+    RectangleShape lowerFrameRect(
+        SCArch::Rect(8.0, .2, {-1.9f, -1.0f}, SColor::normalizeColor(127, 127, 127))
+    );
+    RectangleShape leftFrame(
+        SCArch::Rect(.3, 8.0, {1.8f, 1.0f}, SColor::normalizeColor(127, 127, 127))
+    );
+
+    auto frameHandle = frameObj.addShape(frameRect);
+    auto upprFrameHndle = frameObj.addShape(upprFrameRect);
+    auto lowerFrameHndle = frameObj.addShape(lowerFrameRect);
+    auto leftFrameHndle = frameObj.addShape(leftFrame);
+
+    SCButton frame(&frameObj, frameHandle, &renderer);
 
     // Stroke frames
     std::vector<SCObject> strokes;
@@ -146,12 +161,13 @@ int main() {
     // create the first empty frame
     strokes.emplace_back(&renderer);
     SCObject* active = &strokes[currentFrame];
+    SCObject* onion = &strokes[currentFrame];
 
     // Brush
     Brush brush;
     brush.radius   = 0.01f;
     brush.spacing  = 0.00001f;
-    //brush.color    = glm::vec3(240/255.f, 240/255.f, 255/255.f);
+    brush.color = glm::vec3(240/255.f, 240/255.f, 255/255.f);
     brush.color = SColor::normalizeColor(0, 0, 0);
     brush.segments = 36;
 
@@ -177,7 +193,6 @@ int main() {
         std::cout << "red button clicked\n";
     });
 
-
     SCObject blueButton(&renderer);
     auto blueCirc = CircleShape({-1.56f, .9f}, .05f, 64, SColor::normalizeColor(163, 163, 255));
     auto blueBtnHandle = blueButton.addShape(blueCirc);
@@ -197,7 +212,7 @@ int main() {
 
     SCObject yellowButton(&renderer);
 
-    auto yellowCirc = CircleShape({-1.7f, 0.74f}, .05f, 64, SColor::normalizeColor(220, 220, 163));
+    auto yellowCirc = CircleShape({-1.7f, 0.76f}, .05f, 64, SColor::normalizeColor(220, 220, 163));
     auto yellowBtnHandle = yellowButton.addShape(yellowCirc);
 
     SCButton yellowBtn(&yellowButton, yellowBtnHandle, &renderer);
@@ -215,7 +230,7 @@ int main() {
 
     SCObject greenButton(&renderer);
 
-    auto greenCirc = CircleShape({-1.56f, 0.74}, .05f, 64, SColor::normalizeColor(163, 255, 163));
+    auto greenCirc = CircleShape({-1.56f, 0.76}, .05f, 64, SColor::normalizeColor(163, 255, 163));
     auto greenBtnHandle = greenButton.addShape(greenCirc);
 
     SCButton greenBtn(&greenButton, greenBtnHandle, &renderer);
@@ -228,6 +243,78 @@ int main() {
         } else {
             brush.color = SColor::normalizeColor(0, 0, 0);
             greenButton.setShapeColor(greenBtnHandle, SColor::normalizeColor(163, 255, 163));
+        }
+    });
+
+    SCObject purpleButton(&renderer);
+
+    auto purpleCirc = CircleShape({-1.7f, 0.62f}, .05f, 64, SColor::normalizeColor(200, 100, 200));
+    auto purpleBtnHandle = purpleButton.addShape(purpleCirc);
+
+    SCButton purpleBtn(&purpleButton, purpleBtnHandle, &renderer);
+    bool toggledPurple = false;
+    purpleBtn.setCallback([&](){
+        toggledPurple = !toggledPurple;
+        if (toggledPurple) {
+            brush.color = SColor::normalizeColor(128, 0, 128);
+            purpleButton.setShapeColor(purpleBtnHandle, SColor::normalizeColor(80, 0, 80));
+        } else {
+            brush.color = SColor::normalizeColor(0, 0, 0);
+            purpleButton.setShapeColor(purpleBtnHandle, SColor::normalizeColor(200, 100, 200));
+        }
+    });
+
+    SCObject orangeButton(&renderer);
+
+    auto orangeCirc = CircleShape({-1.56f, 0.62f}, .05f, 64, SColor::normalizeColor(255, 177, 102));
+    auto orangeBtnHandle = orangeButton.addShape(orangeCirc);
+
+    SCButton orangeBtn(&orangeButton, orangeBtnHandle, &renderer);
+    bool toggledOrange = false;
+    orangeBtn.setCallback([&](){
+        toggledOrange = !toggledOrange;
+        if (toggledOrange) {
+            brush.color = SColor::normalizeColor(255, 127, 39);
+            orangeButton.setShapeColor(orangeBtnHandle, SColor::normalizeColor(255, 127, 39));
+        } else {
+            brush.color = SColor::normalizeColor(0, 0, 0);
+            orangeButton.setShapeColor(orangeBtnHandle, SColor::normalizeColor(255, 177, 102));
+        }
+    });
+
+    SCObject brownButton(&renderer);
+
+    auto brownCirc = CircleShape({-1.7f, 0.48f}, .05f, 64, SColor::normalizeColor(185, 150, 124));
+    auto brownBtnHandle = brownButton.addShape(brownCirc);
+
+    SCButton brownBtn(&brownButton, brownBtnHandle, &renderer);
+    bool toggledBrown = false;
+    brownBtn.setCallback([&](){
+        toggledBrown = !toggledBrown;
+        if (toggledBrown) {
+            brush.color = SColor::normalizeColor(185, 122, 87);
+            brownButton.setShapeColor(brownBtnHandle, SColor::normalizeColor(185, 122, 87));
+        } else {
+            brush.color = SColor::normalizeColor(0,0,0);
+            brownButton.setShapeColor(brownBtnHandle, SColor::normalizeColor(185, 150, 124));
+        }
+    });
+
+    SCObject whiteButton(&renderer);
+
+    auto whiteCirc = CircleShape({-1.56f, 0.48f}, .05f, 64, SColor::normalizeColor(230, 230, 230));
+    auto whiteBtnHandle = whiteButton.addShape(whiteCirc);
+
+    SCButton whiteBtn(&whiteButton, whiteBtnHandle, &renderer);
+    bool toggledWhite = false;
+    whiteBtn.setCallback([&](){
+        toggledWhite = !toggledWhite;
+        if (toggledWhite) {
+            brush.color = SColor::normalizeColor(255, 255, 255);
+            whiteButton.setShapeColor(whiteBtnHandle, SColor::normalizeColor(255, 255, 255));
+        } else {
+            brush.color = SColor::normalizeColor(0, 0, 0);
+            whiteButton.setShapeColor(whiteBtnHandle, SColor::normalizeColor(230, 230, 230));
         }
     });
 
@@ -256,8 +343,9 @@ int main() {
         v.pos += upCenter;
     }
 
-    ShapeHandle arrowU = upArrowButton.addShape(upArrow);
     ShapeHandle bgU = upArrowButton.addShape(upBgVerts);
+    ShapeHandle arrowU = upArrowButton.addShape(upArrow);
+
     SCButton arrowUpBtn(&upArrowButton, bgU, &renderer);
 
     arrowUpBtn.setCallback([&]() {
@@ -298,8 +386,9 @@ int main() {
         v.pos += dwnCenter;
     }
 
-    ShapeHandle arrowH = dwnArrowButton.addShape(downArrow);
     ShapeHandle bgH    = dwnArrowButton.addShape(bgVerts);
+    ShapeHandle arrowH = dwnArrowButton.addShape(downArrow);
+    
     SCButton arrowBtn(&dwnArrowButton, bgH, &renderer);
 
     arrowBtn.setCallback([&](){
@@ -322,6 +411,12 @@ int main() {
     bool prevLeft  = false;
 
     while (!glfwWindowShouldClose(window)) {
+        static bool prevO = false;
+        bool oNow = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
+        bool justO = (oNow && !prevO);
+        prevO = oNow;
+
+        if (justO) onionEnabled = !onionEnabled;
         glfwPollEvents();
 
         glfwGetFramebufferSize(window, &width, &height);
@@ -361,20 +456,35 @@ int main() {
 
         active = &strokes[currentFrame];
 
+        SCObject* onion = nullptr;
+        if (onionEnabled && currentFrame > 0) {
+            onion = &strokes[currentFrame - 1];
+        }
+
         // old mouse state
         redBtn.update(fs, mouseWasDown);
         blueBtn.update(fs, mouseWasDown);
         yellowBtn.update(fs, mouseWasDown);
         greenBtn.update(fs, mouseWasDown);
+        purpleBtn.update(fs, mouseWasDown);
+        orangeBtn.update(fs, mouseWasDown);
+        brownBtn.update(fs, mouseWasDown);
+        whiteBtn.update(fs, mouseWasDown);
+
         arrowBtn.update(fs, mouseWasDown);
         arrowUpBtn.update(fs, mouseWasDown);
 
         // Ignore painting when mouse is over the buttons
         if (!redBtn.contains(fs.worldPos) &&
+            !frame.contains(fs.worldPos) &&
             !blueBtn.contains(fs.worldPos) &&
             !arrowBtn.contains(fs.worldPos) &&
             !greenBtn.contains(fs.worldPos) &&
             !yellowBtn.contains(fs.worldPos) &&
+            !purpleBtn.contains(fs.worldPos) &&
+            !orangeBtn.contains(fs.worldPos) &&
+            !brownBtn.contains(fs.worldPos) &&
+            !whiteBtn.contains(fs.worldPos) &&
             !arrowUpBtn.contains(fs.worldPos))
         {
             handlePainting(fs, brush, *active, lastPlacedPos, lastPosValid, mouseWasDown);
@@ -385,12 +495,29 @@ int main() {
         glm::mat4 vp = glm::ortho(-aspect, aspect, -1.f, 1.f, -1.f, 1.f);
 
         background.draw(shader, vp);
+        if (onion) {
+            for (ShapeHandle h : onion->getShapeHandles()) {
+                renderer.setOverrideColor(h, SColor::normalizeColor(200, 200, 200));
+            }
+            onion->draw(shader, vp);
+            for (ShapeHandle h : onion->getShapeHandles()) {
+                renderer.clearOverrideColor(h);
+            }
+        }
+
         active->draw(shader, vp);
+
+        frame.draw(shader, vp);
 
         redBtn.draw(shader, vp);
         blueBtn.draw(shader, vp);
         yellowBtn.draw(shader, vp);
         greenBtn.draw(shader, vp);
+        purpleBtn.draw(shader, vp);
+        orangeBtn.draw(shader, vp);
+        brownBtn.draw(shader, vp);
+        whiteBtn.draw(shader, vp);
+
         arrowBtn.draw(shader, vp);
         arrowUpBtn.draw(shader, vp);
 

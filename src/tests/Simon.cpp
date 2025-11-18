@@ -16,6 +16,11 @@
 #include "../objects/SCObject.hpp"
 #include "../ui/elements/SCButton.hpp"
 #include "../input/Input.h"
+#include "../color/SColor.hpp"
+
+double backgroundFlashTimer = 0.0;
+glm::vec3 backgroundFlashColor;
+bool backgroundIsFlashing = false;
 
 // -------------------------------------------------------------
 // Utility
@@ -40,6 +45,7 @@ FrameState fsUpdate(Input& in, GLFWwindow* win, int w, int h, float aspect) {
 
 
 enum class GameState {
+    DelayBeforeShow,
     ShowSequence,
     WaitInput
 };
@@ -59,12 +65,25 @@ int main() {
     glfwSwapInterval(1);
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return -1;
 
+    double delayTimer = 0.0;
+
     Renderer2D renderer;
     Shader shader =
         Shader::fromFiles("Shader/config/flat.vert","Shader/config/flat.frag");
 
     Input input;
     input.initialize(window);
+
+    SCObject background(&renderer);
+    
+    RectangleShape fullScreenRect(
+        { -1.333f, -1.0f },
+        {  1.333f,  1.0f },
+        //{ 0.05f, 0.05f, 0.08f }
+        SColor::normalizeColor(10, 10, 220)
+    );
+    auto backgroundHandle = background.addShape(fullScreenRect);
+    
 
     // -------------------------------------------------------------
     // CREATE FOUR PADS
@@ -142,6 +161,8 @@ int main() {
         // ---------------------------------------------------------
         // GAME STATE MACHINE
 
+        bool correct = false;
+
         if(state == GameState::ShowSequence) {
             timer -= 1.0/60.0;
 
@@ -175,32 +196,48 @@ int main() {
             }
         }
 
-        else if(state == GameState::WaitInput) {
-            // user clicks a pad
-            for(int i=0;i<4;i++) {
-                if(pads[i].button->contains(fs.worldPos)
-                   && fs.mouseJustPressed) {
-
-                    if(i == sequence[inputIndex]) {
+        else if (state == GameState::WaitInput) {
+            for (int i = 0; i < 4; i++) {
+                if (pads[i].button->contains(fs.worldPos) && fs.mouseJustPressed) {
+                
+                    if (i == sequence[inputIndex]) {
                         inputIndex++;
-                        if(inputIndex == (int)sequence.size()) {
-                            // correct — extend sequence
-                            sequence.push_back(rng()%4);
+                        if (inputIndex == (int)sequence.size()) {
+                            // ---- CORRECT ----
+                            backgroundIsFlashing = true;
+                            backgroundFlashColor = SColor::normalizeColor(0, 255, 0);
+                            backgroundFlashTimer = 0.25;
+                        
+                            sequence.push_back(rng() % 4);
                             playbackIndex = 0;
                             flashing = false;
-                            timer = pauseTime;
-                            state = GameState::ShowSequence;
+                        
+                            delayTimer = 0.45;              // pre-show pause
+                            state = GameState::DelayBeforeShow;
                         }
                     } else {
-                        // wrong — reset the game
+                        // ---- WRONG ----
+                        backgroundIsFlashing = true;
+                        backgroundFlashColor = SColor::normalizeColor(255, 0, 0);
+                        backgroundFlashTimer = 0.25;
+                    
                         sequence.clear();
-                        sequence.push_back(rng()%4);
+                        sequence.push_back(rng() % 4);
                         playbackIndex = 0;
-                        timer = pauseTime;
                         flashing = false;
-                        state = GameState::ShowSequence;
+                    
+                        delayTimer = 0.45;              // pre-show pause
+                        state = GameState::DelayBeforeShow;
                     }
                 }
+            }
+        }
+
+        if (state == GameState::DelayBeforeShow) {
+            delayTimer -= 1.0 / 60.0;
+            if (delayTimer <= 0.0) {
+                state = GameState::ShowSequence;
+                timer = pauseTime;
             }
         }
 
@@ -210,6 +247,19 @@ int main() {
         // DRAW
         glm::mat4 vp =
             glm::ortho(-aspect,aspect,-1.f,1.f,-1.f,1.f);
+        
+        if (backgroundIsFlashing) {
+        background.setShapeColor(backgroundHandle, backgroundFlashColor);
+        backgroundFlashTimer -= 1.0/60.0;
+
+            if (backgroundFlashTimer <= 0.0) {
+                backgroundIsFlashing = false;
+            }
+        } else {
+            background.setShapeColor(backgroundHandle, SColor::normalizeColor(0,0,50));
+        }
+
+        background.draw(shader, vp);
 
         for(int i=0;i<4;i++)
             pads[i].obj.draw(shader, vp);

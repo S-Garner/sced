@@ -27,6 +27,8 @@ endif()
 include_directories(${GLFW_INCLUDE_DIR})
 link_directories(${GLFW_LIB_DIR})
 
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
 # --- GLM (header-only) ---
 add_subdirectory(external/glm)
 
@@ -73,6 +75,19 @@ add_executable(paint_test
 )
 
 target_link_libraries(paint_test PRIVATE glad ${GLFW_LIB} glm)
+
+add_executable(pong
+        src/tests/Pong.cpp
+        src/ui/elements/SCButton.cpp
+        src/Renderer/Shader/Shader.cpp
+        src/Renderer/Renderer2D.cpp
+        src/Renderer/Renderer2D.cpp
+        src/core/Window.cpp
+        src/input/Input.cpp
+        src/objects/SCObject.cpp
+)
+
+target_link_libraries(pong PRIVATE glad ${GLFW_LIB} glm)
 
 add_executable(numbers_test
         src/tests/Numbers.cpp
