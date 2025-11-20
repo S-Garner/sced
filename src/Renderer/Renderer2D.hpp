@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 #include "Vertex2D.hpp"
 #include "ShapeRecord.hpp"
 #include "Shader/Shader.hpp"

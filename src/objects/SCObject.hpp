@@ -45,7 +45,7 @@ public:
     void setVisible(bool v);
     bool isVisible() const;
 
-    void draw(const Shader& shader, const glm::mat4& vp);
+    void draw(const Shader& shader, const glm::mat4& vp) const;
 
     SCObject clone() const;
 

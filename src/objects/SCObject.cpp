@@ -84,7 +84,7 @@ void SCObject::setShapeColor(ShapeHandle handle, const glm::vec3& color) {
 // -------------------------------
 // Draw
 // -------------------------------
-void SCObject::draw(const Shader& shader, const glm::mat4& vp) {
+void SCObject::draw(const Shader& shader, const glm::mat4& vp) const{
     if (!visible) return;
 
     std::vector<ShapeHandle> list;
