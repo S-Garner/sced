@@ -139,6 +139,8 @@ int main() {
     bool mouseWasDown = false;
     int width=0, height=0;
 
+    int points = 0;
+
     // -------------------------------------------------------------
     // MAIN LOOP
     while(!glfwWindowShouldClose(window)) {
@@ -203,7 +205,9 @@ int main() {
                     if (i == sequence[inputIndex]) {
                         inputIndex++;
                         if (inputIndex == (int)sequence.size()) {
+                            points++;
                             // ---- CORRECT ----
+                            std::cout << "Correct!!! Current streak is " << points << std::endl;
                             backgroundIsFlashing = true;
                             backgroundFlashColor = SColor::normalizeColor(0, 255, 0);
                             backgroundFlashTimer = 0.25;
@@ -217,6 +221,8 @@ int main() {
                         }
                     } else {
                         // ---- WRONG ----
+                        points = 0;
+                        std::cout << "Sorry :(" << std::endl; 
                         backgroundIsFlashing = true;
                         backgroundFlashColor = SColor::normalizeColor(255, 0, 0);
                         backgroundFlashTimer = 0.25;
