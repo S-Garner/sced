@@ -1,0 +1,23 @@
+{
+  "shapes": {
+    "object_vec": {
+      "type": "rectangle",
+      "position": {
+        "x": -0.2,
+        "y": 0.35
+      },
+      "size": {
+        "x": 0.8,
+        "y": 0.4
+      },
+      "color": [255, 128, 64]
+    },
+    "array_vec": {
+      "type": "circle",
+      "position": [0.25, -0.1],
+      "radius": 0.3,
+      "segments": 12,
+      "color": [0.5, 0.25, 0.0]
+    }
+  }
+}
